@@ -1,0 +1,45 @@
+name: Plantilla CI/CD Reutilizable
+
+on:
+  workflow_call:
+    inputs:
+      publicar_imagen:
+        description: 'Determina si la imagen se sube a Docker Hub'
+        required: true
+        type: boolean
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
+
+jobs:
+  construir-y-validar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Descargar código fuente
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar entorno Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 3. Ejecutar Pruebas (Validación)
+        run: |
+          npm install
+          npm test
+
+      - name: 4. Iniciar sesión en Docker Hub (Condicional)
+        if: ${{ inputs.publicar_imagen == true }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: 5. Construir Imagen Docker (y opcionalmente publicar)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: ${{ inputs.publicar_imagen }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/auy1104-api-cliente:${{ github.sha }}
