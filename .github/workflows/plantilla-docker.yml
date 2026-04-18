@@ -37,11 +37,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: 5. Construir Imagen Docker (y opcionalmente publicar)
+      - - name: 5. Construir Imagen Docker (y opcionalmente publicar)
         uses: docker/build-push-action@v5
         with:
           context: .
           push: ${{ inputs.publicar_imagen }}
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/auy1104-api-cliente:${{ github.ref_name }}
             ${{ secrets.DOCKERHUB_USERNAME }}/auy1104-api-cliente:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/auy1104-api-cliente:sha-${{ github.sha }}
