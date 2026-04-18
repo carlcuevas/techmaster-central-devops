@@ -42,4 +42,6 @@ jobs:
         with:
           context: .
           push: ${{ inputs.publicar_imagen }}
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/auy1104-api-cliente:${{ github.sha }}
+          tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/auy1104-api-cliente:${{ github.ref_name }}
+          ${{ secrets.DOCKERHUB_USERNAME }}/auy1104-api-cliente:latest
